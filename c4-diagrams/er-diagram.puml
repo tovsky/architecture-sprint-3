@@ -1,0 +1,70 @@
+@startuml
+
+
+entity "User" {
+  * id : UUID
+  * username : String
+  * password : String
+  * email : String
+  * phone : String
+  * statusId : String
+}
+
+entity "Role" {
+  * id : UUID
+  * useId : String
+  * role: String
+}
+
+entity "UserStatus" {
+  * id : UUID
+  * status : String
+}
+
+entity "House" {
+  * id : UUID
+  * name : String
+  * address : String
+  * statusId : String
+}
+
+entity "HouseStatus" {
+  * id : UUID
+  * status : String
+}
+
+entity "Device" {
+  * id : UUID
+  * name : String
+  * deviceTypeId : String
+  * statusId : String
+}
+
+entity "DeviceType" {
+  * id : UUID
+  * type: String
+}
+
+entity "DeviceStatus" {
+  * id : UUID
+  * status : String
+}
+
+entity "TelemetryData" {
+  * id : UUID
+  * deviceId : UUID
+  * createdAt : Timestamp
+  * data : JSON
+}
+
+
+User --o{ Role : hasMany
+User <--> UserStatus : 1:1
+User --o{ House : hasMany
+House <--> HouseStatus : 1:1
+House --o{ Device : hasMany
+Device <--> DeviceType : 1:1
+Device <--> DeviceStatus : 1:1
+Device --o{ TelemetryData : hasMany
+
+@enduml

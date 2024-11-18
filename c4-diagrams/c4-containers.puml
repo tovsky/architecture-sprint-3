@@ -1,0 +1,71 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/release/v2.5.0/C4_Container.puml
+
+
+LAYOUT_WITH_LEGEND()
+
+title C4 Диаграмма контейнеров системы Умный дом.
+
+
+Person(User, "User", "Пользователь системы умный дом")
+Person(Administrator, "Administrator", "Администратор (выездной специалист) системы умный дом")
+
+System(WebApplication, "WEB интерфейс клиента", "WEB интерфейс для управления устройствами")
+System(AdminWebApplication, "WEB интерфейс специалиста администратора", "WEB интерфейс для первичного подключения устройств и датчиков выездным специалистом")
+
+Rel(User, WebApplication, "Получение информации об устройствах")
+Rel(User, WebApplication, "Самостоятельное подключение новых устройств")
+Rel(User, WebApplication, "Управление устройствами умного дома")
+
+Rel(Administrator, AdminWebApplication, "Запросы к админ панели. Пользователи, устройства и тд")
+
+
+System_Boundary("SmartHome", "Умный дом") {
+    Container(ApiGateway, "API Gateway", "Api Gateway шлюз для всех внешних запросов")
+
+    Container(DeviceService, "Device Service", "Сервис управления устройствами умного дома: подключение, статусы, и тд")
+    ContainerDb(DeviceDatabase, "БД микросервиса DeviceService", "PostgreSQL")
+
+    Container(TelemetryService, "Telemetry Service", "Сервис телеметрии: Асинхронный сбор, хранение агрегация данных с устройств и датчиков")
+    ContainerDb(TelemetryDatabase, "БД микросервиса TelemetryService", "Clickhouse")
+
+    Container(HouseService, "House Service", "Сервис умного дома: объект дом, локация, пользователи и устройства, закрепленные за домом")
+    ContainerDb(HouseDatabase, "БД микросервиса HouseService", "PostgreSQL")
+
+    Container(BillingService, "Billing Service", "Сервис оплат: проведение платежей. Интеграции к внешним системам оплат")
+    ContainerDb(BillingDatabase, "БД микросервиса BillingService", "PostgreSQL")
+
+    Container(UserService, "User Service", "Сервис User: информация о пользователе, роли и тд")
+    ContainerDb(UserDatabase, "БД микросервиса UserService", "PostgreSQL")
+
+    Container(NotificationService, "Notification Service", "Сервис уведомлений: Уведомления пользователей при различных событиях. Интеграции с внешними сервисами уведомлений (SMS, TG, SMTP server)")
+    ContainerDb(NotificationDatabase, "БД микросервиса NotificationService", "PostgreSQL")
+
+    SystemQueue(Kafka, "Шина событий", "Kafka Централизованная очередь событий")
+}
+
+
+Rel(WebApplication, ApiGateway, "HTTP апросы клиента на API монолитного приложения")
+Rel(AdminWebApplication, ApiGateway, "HTTP Запросы админа на API монолитного приложения")
+
+
+Rel(ApiGateway, DeviceService, "Перенаправление допущенных HTTP запросов на сервис")
+Rel(ApiGateway, HouseService, "Перенаправление допущенных HTTP запросов на сервис")
+Rel(ApiGateway, BillingService, "Перенаправление допущенных HTTP запросов на сервис")
+Rel(ApiGateway, UserService, "Перенаправление допущенных HTTP запросов на сервис")
+
+Rel(DeviceService, DeviceDatabase, "SQL запросы чтения/записи")
+Rel(TelemetryService, TelemetryDatabase, "SQL запросы чтения/записи")
+Rel(HouseService, HouseDatabase, "SQL запросы чтения/записи")
+Rel(BillingService, BillingDatabase, "SQL запросы чтения/записи")
+Rel(UserService, UserDatabase, "SQL запросы чтения/записи")
+Rel(NotificationService, NotificationDatabase, "SQL запросы чтения/записи")
+
+
+Rel(ApiGateway, Kafka, "Публикация событий - данные с устройств и датчиков. Для асинхронной обработки.")
+Rel(DeviceService, Kafka, "Публикаация событий об успешном подключении устройств и датчиков")
+Rel(BillingService, Kafka, "Публикаация событий об успешных оплатах")
+Rel(TelemetryService, Kafka, "Чтение событий (данных) от устройств и датчиков")
+Rel(NotificationService, Kafka, "Чтение событий, вызывающих уведомления для пользователей и администраторов")
+
+@enduml

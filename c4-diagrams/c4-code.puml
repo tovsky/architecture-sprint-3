@@ -1,0 +1,77 @@
+@startuml
+
+title C4 Диаграмма кода микросервиса NotificationService в системе Умный дом.
+
+class KafkaConsumer {
+  +void consume(event: NotificationEvent)
+}
+
+class NotifyScenario {
+  -manageService: ManageService
+
+  +notify(event: NotificationEvent): NotificationStatus
+}
+
+
+class NotificationEvent {
+  - eventId: String
+  - notificationType: NotificationType
+  - actionType: String
+  - timestamp: DateTime
+  - eventData: Array
+}
+
+
+enum NotificationType {
+  SMS
+  TG
+  EMAIL
+}
+
+
+enum NotificationStatus {
+  SUCCESS
+  REJECT
+}
+
+
+class ManageService {
+  - services: Array<ExternalServiceInterface>
+
+  +void getByType(type: NotificationType)
+}
+
+class NotificationRepository {
+  -connectDB: Object
+
+  +getByUid(uid :String)
+  +saveNotification(notification: Object)
+}
+
+interface ExternalServiceInterface {
+  +send(event: NotificationEvent)
+}
+
+
+class SmsExternalService() implements ExternalServiceInterface  {
+  +send(event: NotificationEvent)
+}
+
+class TgExternalService() implements ExternalServiceInterface {
+  +send(event: NotificationEvent)
+}
+
+class EmailExternalService() implements ExternalServiceInterface {
+  +send(event: NotificationEvent)
+}
+
+
+KafkaConsumer --> NotifyScenario: notify
+NotificationEvent --> "1" NotificationType
+NotifyScenario ..> NotificationEvent: notify
+NotifyScenario "1" -- "1" ManageService : has
+ManageService "1" -- "0..*" ExternalServiceInterface : has
+NotifyScenario --> NotificationRepository: uses
+
+
+@enduml

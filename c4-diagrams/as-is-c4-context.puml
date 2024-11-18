@@ -1,0 +1,36 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+LAYOUT_WITH_LEGEND()
+
+title Диаграмма контекста монолитного приложения AS IS
+
+Person(User, "User", "Пользователь системы умный дом")
+Person(Administrator, "Administrator", "Администратор (выездной специалист) системы умный дом")
+
+System(WebApplication, "WEB интерфейс клиента", "WEB интерфейс для управления устройствами")
+System(AdminWebApplication, "WEB интерфейс специалиста администратора", "WEB интерфейс для первичного подключения устройств и датчиков выездным специалистом")
+
+System(MonolithApplication, "Backend приложение умного дома", "Контролеры API для управления умными устройствами, и авторизация пользователей по ролям.")
+
+SystemDb(MonolithDatabase, "БД монолитного приложения. Чтение и запись данных", "PostgreSQL")
+
+System_Ext(HeatingSystem, "Устройства управления отоплением", "Управление системой отопления")
+System_Ext(TemperatureSensor, "Датчики температуры", "Мониторинг температуры")
+
+Rel(User, WebApplication, "Получение информации об устройстве")
+Rel(User, WebApplication, "Установка значений температуры")
+Rel(User, WebApplication, "Вкл/Выкл устройств умного дома")
+
+Rel(Administrator, AdminWebApplication, "Первичное подключение устройств умного дома на выезде у клиента")
+
+Rel(WebApplication, MonolithApplication, "HTTP апросы клиента на API монолитного приложения")
+
+Rel(AdminWebApplication, MonolithApplication, "HTTP Запросы админа на API монолитного приложения")
+
+Rel(MonolithApplication, MonolithDatabase, "SQL Чтение и запись данных")
+
+Rel(MonolithApplication, TemperatureSensor, "Получение текущей температуры")
+Rel(MonolithApplication, HeatingSystem, "Включение/отключение отопления")
+Rel(MonolithApplication, HeatingSystem, "Изменение температуры отопления")
+@enduml
