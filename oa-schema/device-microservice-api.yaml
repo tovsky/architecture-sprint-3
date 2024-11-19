@@ -1,0 +1,189 @@
+openapi: 3.0.3
+info:
+  title: device-service-api
+  description: "API микросервиса управления устройствами."
+  version: 1.0.0
+paths:
+  /api/v1/devices:
+    post:
+      tags:
+        - Device
+      summary: Добавление нового устройства
+      description: "Регистрация/создание нового устройства."
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceCreateRequest'
+      responses:
+        '201':
+          description: Ресурс успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceResponse'
+        '400':
+          description: Некорректный запрос
+        '500':
+          description: Внутренняя ошибка сервера
+
+  /api/v1/devices/{deviceId}:
+    get:
+      tags:
+        - Device
+      summary: Получение информации об устройстве
+      description: Получение информации об устройстве по ID.
+      parameters:
+        - $ref: '#/components/parameters/deviceId'
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceResponse'
+        '400':
+          description: Некорректный запрос
+        '404':
+          description: Ресурс не найден
+        '500':
+          description: Внутренняя ошибка сервера
+    patch:
+      tags:
+        - Device
+      summary: Частичное редактирование устройства
+      description: "Редактирование устройства. Частичное обновление ресурса."
+      parameters:
+        - $ref: '#/components/parameters/deviceId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceUpdateRequest'
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceResponse'
+        '400':
+          description: Некорректный запрос
+        '404':
+          description: Ресурс не найден
+        '500':
+          description: Внутренняя ошибка сервера
+    delete:
+      tags:
+        - Device
+      summary: Удаление устройства
+      description: "Удаление устройства. Soft удаление."
+      parameters:
+        - $ref: '#/components/parameters/deviceId'
+      responses:
+        '200':
+          description: Успешный ответ
+        '400':
+          description: Некорректный запрос
+        '404':
+          description: Ресурс не найден
+        '500':
+          description: Внутренняя ошибка сервера
+
+  /api/v1/houses/{houseId}/devices:
+    get:
+      tags:
+        - House
+      summary: Получение устройств для конкретного дома
+      description: Получение подключенных устройств по ID дома.
+      parameters:
+        - $ref: '#/components/parameters/houseId'
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DeviceResponse'
+        '400':
+          description: Некорректный запрос
+        '404':
+          description: Ресурс не найден
+        '500':
+          description: Внутренняя ошибка сервера
+
+components:
+  parameters:
+    deviceId:
+      name: deviceId
+      in: path
+      description: Уникальный uuid устройства
+      required: true
+      schema:
+        type: string
+        format: uuid
+    houseId:
+      name: houseId
+      in: path
+      description: Уникальный uuid дома
+      required: true
+      schema:
+        type: string
+        format: uuid
+  schemas:
+    DeviceCreateRequest:
+      properties:
+        id:
+          description: "Уникальный идентификатор устройства"
+          type: string
+          format: uuid
+          example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        name:
+          description: "Имя устройства от производителя"
+          type: string
+          example: "Xiaomi Mi Motion Sensor"
+        devicetType:
+          description: "Тип устройства"
+          type: string
+          example: "sensor-motion"
+        houseId:
+          description: "Уникальный идентификатор умного дома, к которому привязано устройство"
+          type: string
+          format: uuid
+          example: "619d3612-1d91-4abe-aed6-9baaee0146ca"
+        status:
+          description: "Статус устройства"
+          type: string
+          example: "active"
+    DeviceUpdateRequest:
+      properties:
+        status:
+          description: "Статус устройства"
+          type: string
+          example: "notactive"
+    DeviceResponse:
+      properties:
+        id:
+          description: "Уникальный идентификатор устройства"
+          type: string
+          format: uuid
+          example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        name:
+          description: "Имя устройства от производителя"
+          type: string
+          example: "Xiaomi Mi Motion Sensor"
+        devicetType:
+          description: "Тип устройства"
+          type: string
+          example: "sensor-motion"
+        houseId:
+          description: "Уникальный идентификатор умного дома, к которому привязано устройство"
+          type: string
+          format: uuid
+          example: "619d3612-1d91-4abe-aed6-9baaee0146ca"
+        status:
+          description: "Статус устройства"
+          type: string
+          example: "active"

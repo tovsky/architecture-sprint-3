@@ -1,0 +1,37 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title C4 Диаграмма компонента микросервиса NotificationService в системе Умный дом.
+
+
+System_Boundary("NotificationService", "Микросервис уведомлений в системе умный дом") {
+    Component(KafkaConsumer, "Kafka Consumer", "Consumer обработчик сообщений от шины событий")
+
+    Component(RepositoryService, "Repository", "Компонент с логикой для взаимодействия с БД")
+    Component(TgService, "TG integration", "Компонент с логикой интеграции для уведомления с типом ТГ")
+    Component(EmailService, "Email integration", "Компонент с логикой интеграции для уведомления с типом Email")
+    Component(SmsService, "SMS integration", "Компонент с логикой интеграции для уведомления с типом SMS")
+
+}
+
+System_Ext(NotificationDB, "Postgresql база данных микросервиса уведомлений")
+SystemQueue(Kafka, "Шина событий", "Kafka Централизованная очередь событий")
+System_Ext(TelegramExtService, "Внешний сервис для отправок телеграмм уведомлений")
+System_Ext(SmsExtService, "Внешний сервис для отправок SMS уведомлений")
+System_Ext(EmailExtService, "Внешний сервис для отправок EMAIL уведомлений")
+
+Rel(Kafka, KafkaConsumer, "Подписан на топики с событиями для уведомлений")
+
+Rel(KafkaConsumer, TgService, "Использует")
+Rel(KafkaConsumer, EmailService, "Использует")
+Rel(KafkaConsumer, SmsService, "Использует")
+
+Rel(EmailService, EmailExtService, "Отправка уведомления через интеграцию с внешним сервисом")
+Rel(SmsService, SmsExtService, "Отправка уведомления через интеграцию с внешним сервисом")
+Rel(TgService, TelegramExtService, "Отправка уведомления через интеграцию с внешним сервисом")
+
+Rel(KafkaConsumer, RepositoryService, "Использование слоя, инкапсулирующего работу с БД")
+Rel(RepositoryService, NotificationDB, "Чтение и запись данных")
+
+@enduml
