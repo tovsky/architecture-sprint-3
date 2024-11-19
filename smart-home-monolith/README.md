@@ -154,7 +154,16 @@ Kafka - как шина данных для асинхронного взаим�
 Схема кода визуально по url
 - http://www.plantuml.com/plantuml/png/dPB1QiCm38RlVWhHuo27NiiO7UIm3BR1sZw0gSLgY9rWEnkXzDsdM50dgGDRZ_b_VVebnLiVf0kTgOKGQ8CEFQmE7jqApWBW0RI23HmELHc_EdAiD4ZQBZXjlwBQIkz_6gUcAXgfwrdXgR4pbk93vwl4WhYaIJwR6XSdgMQ1ZeglmcMwpYx6v5ln2913NnhAoLEtPv1AEVG-lzzo-pj7A_5R7_yycuhL-xx5IlrZmFAAvOC2ESlSdPljiKQ3mVMb339FyphLH3iwb07LSo1nhmrIWccvclgG-BhxU1zonF0We2YQCmplYvoJz6_Izcmy5iKJf3T3zdgp7Z7nfusW-1qfjiOOcypnJKOW2qocGpDuQwQ-oUR6atkD-eijMjMP-XS0 
 
+=======================================
+# Практика Часть 2.
+Добавил вторую часть практики - схему api микросервисов. 
+Если есть возможность, пожалуйста, посмотрите. Волнуюсь, чтобы успеть до жесткого дедлайна.
 
+В формате OA добавлены описания API микросервисов
+- oa-schema/device-microservice-api.yaml
+- oa-schema/house-microservice-api.yaml
+
+Описания корректно отображаются в Swagger (https://editor.swagger.io/)
 
 
 =======================================

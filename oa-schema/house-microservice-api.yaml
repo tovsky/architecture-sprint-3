@@ -1,0 +1,190 @@
+openapi: 3.0.3
+info:
+  title: house-service-api
+  description: "API микросервиса управления локациями. House microservice."
+  version: 1.0.0
+paths:
+  /api/v1/houses:
+    post:
+      tags:
+        - House
+      summary: Добавление нового дома
+      description: "Регистрация/создание нового дома (новой локации)."
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HouseCreateRequest'
+      responses:
+        '201':
+          description: Ресурс успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HouseResponse'
+        '400':
+          description: Некорректный запрос
+        '500':
+          description: Внутренняя ошибка сервера
+  /api/v1/houses/{houseId}:
+    get:
+      tags:
+        - House
+      summary: Получение информации о доме
+      description: Получение информации о доме по уникальному ID.
+      parameters:
+        - $ref: '#/components/parameters/houseId'
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HouseResponse'
+        '400':
+          description: Некорректный запрос
+        '404':
+          description: Ресурс не найден
+        '500':
+          description: Внутренняя ошибка сервера
+    patch:
+      tags:
+        - House
+      summary: Частичное редактирование информации о доме
+      description: "Редактирование информации о доме. Частичное обновление ресурса."
+      parameters:
+        - $ref: '#/components/parameters/houseId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HouseUpdateRequest'
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HouseResponse'
+        '400':
+          description: Некорректный запрос
+        '404':
+          description: Ресурс не найден
+        '500':
+          description: Внутренняя ошибка сервера
+    delete:
+      tags:
+        - House
+      summary: Удаление ресурса дом
+      description: "Удаление ресурса дом. Soft удаление."
+      parameters:
+        - $ref: '#/components/parameters/houseId'
+      responses:
+        '200':
+          description: Успешный ответ
+        '400':
+          description: Некорректный запрос
+        '404':
+          description: Ресурс не найден
+        '500':
+          description: Внутренняя ошибка сервера
+
+  /api/v1/users/{userId}/houses:
+    get:
+      tags:
+        - User
+      summary: Получение всех домов(локаций) для пользователя
+      description: Получение всех домов(локаций) для пользователя по ID пользователя.
+      parameters:
+        - $ref: '#/components/parameters/userId'
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HouseResponse'
+        '400':
+          description: Некорректный запрос
+        '404':
+          description: Ресурс не найден
+        '500':
+          description: Внутренняя ошибка сервера
+
+components:
+  parameters:
+    houseId:
+      name: houseId
+      in: path
+      description: Уникальный uuid дома
+      required: true
+      schema:
+        type: string
+        format: uuid
+    userId:
+      name: userId
+      in: path
+      description: Уникальный uuid пользователя
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  schemas:
+    HouseCreateRequest:
+      properties:
+        id:
+          description: "Уникальный идентификатор умного дома"
+          type: string
+          format: uuid
+          example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        name:
+          description: "Имя дома локации от пользователя"
+          type: string
+          example: "Квартита 55 в Пушкино"
+        address:
+          description: "Адрес"
+          type: string
+          example: "Московская область г. Пушкино, улица Ленина д7"
+        userId:
+          description: "Уникальный идентификатор пользователя"
+          type: string
+          format: uuid
+          example: "57ef12be-7eea-4ee0-b02d-9b00991cd634"
+        status:
+          description: "Статус дома"
+          type: string
+          example: "active"
+    HouseUpdateRequest:
+      properties:
+        status:
+          description: "Статус дома(локации)"
+          type: string
+          example: "notactive"
+    HouseResponse:
+      properties:
+        id:
+          description: "Уникальный идентификатор умного дома"
+          type: string
+          format: uuid
+          example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        name:
+          description: "Имя дома локации от пользователя"
+          type: string
+          example: "Квартита 55 в Пушкино"
+        address:
+          description: "Адрес"
+          type: string
+          example: "Московская область г. Пушкино, улица Ленина д7"
+        userId:
+          description: "Уникальный идентификатор пользователя"
+          type: string
+          format: uuid
+          example: "57ef12be-7eea-4ee0-b02d-9b00991cd634"
+        status:
+          description: "Статус дома"
+          type: string
+          example: "active"
+
